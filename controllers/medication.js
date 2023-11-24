@@ -16,15 +16,19 @@ const getMedication = async (req, res) => {
     createdBy: userId,
   });
   if (!medication) {
-    res.status(404).json({ error:`No medication with id ${jobId}`});
+    res.status(404).json({ message:`No medication with id ${jobId}`});
   }
   res.status(200).json({ medication });
 };
 
 const createMedication = async (req, res) => {
-  req.body.createdBy = req.user._id;
-  const medication = await Medication.create(req.body);
-  res.status(201).json({ medication });
+  if(req.user.userType != 'doctor'){
+    res.status(401).json({ error: "you are not permitted "} )
+  } else {
+    req.body.createdBy = req.user._id;
+    const medication = await Medication.create(req.body);
+    res.status(201).json({ medication });
+  }
 };
 
 // TODO

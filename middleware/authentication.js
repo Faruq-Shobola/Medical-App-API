@@ -15,11 +15,11 @@ const auth = (req, res, next) => {
     const payload = admin.verifyIdToken(token);
     if (userType === "doctor") {
       const doctor = Doctor.findOne({ email: payload.email });
-      req.user = { ...doctor };
+      req.user = { ...doctor, userType: "doctor" };
       next();
     } else if (userType === "patient") {
       const patient = Patient.findOne({ email: payload.email });
-      req.user = { ...patient };
+      req.user = { ...patient, userType: "patient" };
       next();
     } else {
       res.status(400).json({ error: "Invalid userType" });
