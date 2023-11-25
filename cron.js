@@ -14,6 +14,7 @@ const dailyMedLogger = cron.schedule("* * * * *", () => {
     const dailyMedication = DailyMedication.create({
       date: currentDate,
       medications: medications.map((medication) => medication._id),
+      patient: medications.assignedto,
     });
 
   console.log("done");

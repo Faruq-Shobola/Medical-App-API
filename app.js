@@ -1,20 +1,22 @@
 require("dotenv").config();
 const express = require("express");
 const connectDB = require("./db/connect");
-const cron = require("node-cron")
 const app = express();
 
 const authRouter = require("./routes/auth");
-const medicationRouter = require("./routes/medication")
+const medicationRouter = require("./routes/medication");
+const dailyMedicationRouter = require("./routes/dailymedication");
+const trackMedicationRouter = require("./routes/trackmedication");
 
-const authenticateUser = require("./middleware/authentication")
-const dailyMedLogger = require("./cron")
+const authenticateUser = require("./middleware/authentication");
+const dailyMedLogger = require("./cron");
 
 app.use(express.json());
 
 app.use("/api/v1/auth/", authRouter);
 app.use("/api/v1/medication/", authenticateUser, medicationRouter);
-
+app.use("/api/v1/dailymedication/", authenticateUser, dailyMedicationRouter);
+app.use("/api/v1/trackmedication/", authenticateUser, trackMedicationRouter);
 
 const port = process.env.port || 3000;
 
@@ -25,8 +27,7 @@ const start = async () => {
       console.log(`server is running on port ${port}...`);
     });
 
-    dailyMedLogger.start()
-
+    dailyMedLogger.start();
   } catch (error) {
     console.log(error);
   }
