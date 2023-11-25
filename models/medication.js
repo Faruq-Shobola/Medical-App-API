@@ -15,14 +15,14 @@ const MedicationSchema = new mongoose.Schema(
     note: {
       type: String,
     },
-    startDate: {
+    startdate: {
       type: Date,
       required: [true, "Please provide start date"],
     },
-    endDate: {
+    enddate: {
       type: Date,
     },
-    timeFrequency: {
+    timefrequency: {
       type: String,
       enum: ["day", "afternoon", "night"],
       required: [true, "please provide a frequency"]
@@ -31,12 +31,12 @@ const MedicationSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    createdBy: {
+    createdby: {
       type: mongoose.Types.ObjectId,
       ref: "Doctor",
       required: [true, "Please provide doctor"],
     },
-    AssignedTo: {
+    assignedto: {
       type: mongoose.Types.ObjectId,
       ref: "Patient",
       required: [true, "Please provide patient"],
