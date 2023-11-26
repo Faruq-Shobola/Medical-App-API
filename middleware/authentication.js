@@ -1,6 +1,6 @@
 const { admin } = require("../auth");
-const Doctor = require("../models/Doctor");
-const Patient = require("../models/Patient");
+const Doctor = require("../models/doctor");
+const Patient = require("../models/patient");
 
 const auth = (req, res, next) => {
   const { userType } = req.body;
