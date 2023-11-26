@@ -54,9 +54,9 @@ const updateMedication = async (req, res) => {
       params: { id: medicationId },
     } = req;
 
+
     const medication = await Medication.findOne({
-      _id: medicationId,
-      createdBy: user._id, // Check if the user is the creator of the medication
+      _id: medicationId 
     });
 
     if (!medication) {
@@ -65,9 +65,19 @@ const updateMedication = async (req, res) => {
         .json({ error: `No medication with id ${medicationId}` });
     }
 
+    if (user.userType === "patient") {
+      const patient = await Patient.findOne({ email: user.email });
+      if(medication.createdby.toString() !== patient._id.toString()){
+        return res
+          .status(401)
+          .json({ error: "You are not authorized to edit this medication" });
+      }
+    } 
+
+
     const updatedMedication = await Medication.findByIdAndUpdate(
       medicationId,
-      req.body,
+      req.body.data,
       { new: true, runValidators: true }
     );
 
@@ -86,9 +96,9 @@ const deleteMedication = async (req, res) => {
       params: { id: medicationId },
     } = req;
 
-    const medication = await Medication.findOneAndRemove({
+    
+    const medication = await Medication.findOne({
       _id: medicationId,
-      createdBy: user._id, // Check if the user is the creator of the medication
     });
 
     if (!medication) {
@@ -96,6 +106,18 @@ const deleteMedication = async (req, res) => {
         .status(404)
         .json({ error: `No medication with id ${medicationId}` });
     }
+
+    if (user.userType === "patient") {
+      const patient = await Patient.findOne({ email: user.email });
+      if (medication.createdby.toString() !== patient._id.toString()) {
+        return res
+          .status(401)
+          .json({ error: "You are not authorized to delete this medication" });
+      }
+    }
+    const removemedication = await Medication.findOneAndDelete({
+      _id: medicationId,
+    });
 
     res.status(200).send();
   } catch (error) {
