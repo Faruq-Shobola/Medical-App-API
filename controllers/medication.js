@@ -1,4 +1,6 @@
 const Medication = require("../models/medication");
+const Doctor = require("../models/doctor");
+const Patient = require("../models/patient");
 const DailyMedication = require("../models/dailymedications");
 
 const getAllMedications = async (req, res) => {
@@ -12,77 +14,95 @@ const getMedication = async (req, res) => {
   } = req;
 
   const medication = await Medication.findOne({
-    _id: medicationId
+    _id: medicationId,
   });
   if (!medication) {
-    res.status(404).json({ message:`No medication with id ${medicationId}`});
+    res.status(404).json({ message: `No medication with id ${medicationId}` });
   }
   res.status(200).json({ medication });
 };
 
 const createMedication = async (req, res) => {
-  
-  if(req.user.userType != 'doctor'){
-    res.status(401).json({ error: "you are not permitted "} )
-  } 
+  const { user } = req;
 
-  req.body.createdBy = req.user._id;
-  const medication = await Medication.create(req.body);
-  res.status(201).json({ medication });
-  
+  try {
+    // Doctors can create medications for patients
+    if (user.userType === "doctor") {
+      const doctor = await Doctor.findOne({ email: user.email });
+      req.body.data.createdby = doctor._id;
+      // Assuming patientId is sent in the request body
+    } else {
+      // Patients can create medications for theirself
+      const patient = await Patient.findOne({ email: user.email });
+      req.body.data.createdby = patient._id;
+      req.body.data.assignedto = patient._id;
+    }
+
+    const medication = await Medication.create(req.body.data);
+    res.status(201).json({ medication });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 };
 
 const updateMedication = async (req, res) => {
+  try {
+    const { user } = req;
 
-  if(req.user.userType != 'doctor'){
-    res.status(401).json({ error: "you are not permitted "} )
+    const {
+      params: { id: medicationId },
+    } = req;
+
+    const medication = await Medication.findOne({
+      _id: medicationId,
+      createdBy: user._id, // Check if the user is the creator of the medication
+    });
+
+    if (!medication) {
+      return res
+        .status(404)
+        .json({ error: `No medication with id ${medicationId}` });
+    }
+
+    const updatedMedication = await Medication.findByIdAndUpdate(
+      medicationId,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    res.status(200).json({ medication: updatedMedication });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
-
-  const {
-    body: { name, startdate, },
-    user: { _id: userId },
-    params: { id: medicationId },
-  } = req;
-
-  if (name === "" || startdate === "") {
-    res.status(400).json({error: "Company or position fields cannot be empty"});
-  }
-  const medication = await Medication.findByIdAndUpdate(
-    { _id: medicationId, createdBy: userId },
-    req.body,
-    { new: true, runValidators: true }
-  );
-  if (!medication) {
-    res.status(404).json({ error: `No medication with id ${medicationId}` });
-  }
-  res.status(200).json({ medication });
-  
-
 };
 
 const deleteMedication = async (req, res) => {
+  try {
+    const { user } = req;
 
-  if(req.user.userType != 'doctor'){
-    res.status(401).json({ error: "you are not permitted "} )
-  } 
+    const {
+      params: { id: medicationId },
+    } = req;
 
-  const {
-    user: { _id: userId },
-    params: { id: medicationId },
-  } = req;
+    const medication = await Medication.findOneAndRemove({
+      _id: medicationId,
+      createdBy: user._id, // Check if the user is the creator of the medication
+    });
 
+    if (!medication) {
+      return res
+        .status(404)
+        .json({ error: `No medication with id ${medicationId}` });
+    }
 
-  const medication = await Medication.findByIdAndRemove({
-    _id: medicationId,
-    createdBy: userId,
-  });
-  if (!medication) {
-    res.status(404).json({ error: `No medication with id ${medicationId}` });
+    res.status(200).send();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
-  res.status(200).send();
-
 };
-
 
 module.exports = {
   getAllMedications,

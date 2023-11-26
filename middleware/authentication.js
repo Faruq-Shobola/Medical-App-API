@@ -1,9 +1,9 @@
 const { admin } = require("../auth");
-const Doctor = require("../models/doctor");
 const Patient = require("../models/patient");
 
 const auth = (req, res, next) => {
   const { userType } = req.body;
+ 
   // check header
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer")) {
@@ -11,23 +11,26 @@ const auth = (req, res, next) => {
   }
   const token = authHeader.split(" ")[1];
   console.log(token);
-  try {
-    const payload = admin.verifyIdToken(token);
-    if (userType === "doctor") {
-      const doctor = Doctor.findOne({ email: payload.email });
-      req.user = { ...doctor, userType: "doctor" };
-      next();
-    } else if (userType === "patient") {
-      const patient = Patient.findOne({ email: payload.email });
-      req.user = { ...patient, userType: "patient" };
-      next();
-    } else {
-      res.status(400).json({ error: "Invalid userType" });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
+  admin
+    .auth()
+    .verifyIdToken(token)
+    .then((payload) => {
+
+      if(userType == "patient") {
+        req.user = { sub: payload.sub, email:payload.email, userType: "patient" };
+        next()
+      } else if(userType == "doctor") {
+        req.user = { sub: payload.sub, email:payload.email, userType: "doctor" };
+        next();
+      } else {
+        res.status(400).json({ error: "Invalid userType" });
+      }
+      
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    });
 };
 
 module.exports = auth;
