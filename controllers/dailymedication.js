@@ -55,7 +55,7 @@ const getAllMedications = async (req, res) => {
     if (!medications) {
       res
         .status(404)
-        .json({ message: `No medication with id ${medicationId}` });
+        .json({ message: `No medication is assigned to id ${patientId}` });
     }
     res.status(200).json({ medications });
   } catch (error) {
@@ -65,35 +65,70 @@ const getAllMedications = async (req, res) => {
 };
 
 const updateMedication = async (req, res) => {
-  if (req.user.userType == "patient") {
+  try {
+    const { user } = req;
     const {
-      user: { _id: userId },
       params: { id: medicationId },
     } = req;
 
-    const medication = await DailyMedication.findByIdAndUpdate(
-      { _id: medicationId, createdBy: userId },
-      req.body,
+    if (user.userType !== "patient") {
+      return res
+        .status(401)
+        .json({ error: "You are not authorized to edit this medication" });
+    }
+
+    const medication = await DailyMedication.findOne({
+      _id: medicationId,
+    });
+
+    if (!medication) {
+      return res
+        .status(404)
+        .json({ error: `No medication with id ${medicationId}` });
+    }
+
+    // Update the medication
+    const updatedMedication = await DailyMedication.findByIdAndUpdate(
+      { _id: medicationId },
+      req.body.data,
       { new: true, runValidators: true }
     );
-    if (!medication) {
-      res.status(404).json({ error: `No medication with id ${medicationId}` });
+
+    if (!updatedMedication) {
+      return res
+        .status(404)
+        .json({ error: `No medication with id ${medicationId}` });
     }
-    res.status(200).json({ medication });
-  } else {
-    res.status(401).json({ error: "you are not permitted" });
+
+    res.status(200).json({ medication: updatedMedication });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
 const trackMedication = async (req, res) => {
-  if (req.user.userType == "doctor") {
-    const patientId = req.params;
-    const medications = await DailyMedication.find({ patient: patientId }).sort(
-      "createdAt"
-    );
-    res.status(200).json({ medications });
-  } else {
-    res.status(401).json({ error: "you are not permitted " });
+  try {
+
+    const {
+      params: { id: patientId },
+    } = req;
+
+    
+    const medication = await DailyMedication.find({
+      patient: patientId,
+    });
+
+    if (!medication) {
+      return res
+        .status(404)
+        .json({ error: `No patient with id ${medicationId}` });
+    }
+
+    res.status(200).json({ medication: medication });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
