@@ -27,10 +27,6 @@ const MedicationSchema = new mongoose.Schema(
       enum: ["day", "afternoon", "night"],
       required: [true, "please provide a frequency"]
     },
-    reminder: {
-      type: Boolean,
-      default: false,
-    },
     createdby: {
       type: mongoose.Types.ObjectId,
       ref: "Doctor",
