@@ -10,7 +10,7 @@ const dailyMedicationRouter = require("./routes/dailymedication");
 const trackMedicationRouter = require("./routes/trackmedication");
 
 const authenticateUser = require("./middleware/authentication");
-const dailyMedLogger = require("./cron");
+// const dailyMedLogger = require("./cron");
 
 app.use(express.json());
 app.use(cors());
@@ -29,7 +29,7 @@ const start = async () => {
       console.log(`server is running on port ${port}...`);
     });
 
-    dailyMedLogger.start();
+    // dailyMedLogger.start();
   } catch (error) {
     console.log(error);
   }

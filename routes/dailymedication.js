@@ -6,7 +6,6 @@ const {
   updateMedication,
 } = require("../controllers/dailymedication");
 
-router.route("/").get(getAllMedications)
-router.route("/:id").patch(updateMedication);
+router.route("/:id").get(getAllMedications).patch(updateMedication);
 
 module.exports = router;

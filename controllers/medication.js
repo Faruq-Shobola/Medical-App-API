@@ -1,7 +1,7 @@
 const Medication = require("../models/medication");
 const Doctor = require("../models/doctor");
 const Patient = require("../models/patient");
-const DailyMedication = require("../models/dailymedications");
+const { createDailyMedications } = require("../controllers/dailymedication");
 
 const getAllMedications = async (req, res) => {
   const medications = await Medication.find({}).sort("createdAt");
@@ -40,6 +40,7 @@ const createMedication = async (req, res) => {
 
     const medication = await Medication.create(req.body.data);
     res.status(201).json({ medication });
+    createDailyMedications(medication);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -54,9 +55,8 @@ const updateMedication = async (req, res) => {
       params: { id: medicationId },
     } = req;
 
-
     const medication = await Medication.findOne({
-      _id: medicationId 
+      _id: medicationId,
     });
 
     if (!medication) {
@@ -67,13 +67,12 @@ const updateMedication = async (req, res) => {
 
     if (user.userType === "patient") {
       const patient = await Patient.findOne({ email: user.email });
-      if(medication.createdby.toString() !== patient._id.toString()){
+      if (medication.createdby.toString() !== patient._id.toString()) {
         return res
           .status(401)
           .json({ error: "You are not authorized to edit this medication" });
       }
-    } 
-
+    }
 
     const updatedMedication = await Medication.findByIdAndUpdate(
       medicationId,
@@ -96,7 +95,6 @@ const deleteMedication = async (req, res) => {
       params: { id: medicationId },
     } = req;
 
-    
     const medication = await Medication.findOne({
       _id: medicationId,
     });
