@@ -2,10 +2,9 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
-const xss = require("xss-clean");
 const rateLimiter = require("express-rate-limit");
 const connectDB = require("./db/connect");
-const multer = require("multer");
+// const multer = require("multer");
 // const upload = multer({ dest: "uploads/" });
 const app = express();
 
@@ -32,7 +31,6 @@ app.use(
 app.use(express.json());
 app.use(cors());
 app.use(helmet());
-app.use(xss());
 
 app.use("/api/v1/auth/", authRouter);
 app.use("/api/v1/patients/", patientRouter);
