@@ -14,6 +14,31 @@ const PatientSchema = new mongoose.Schema({
     require: [true, "Please provide your email"],
     unique: true,
   },
+  about: {
+    type: String,
+  },
+  dateofbirth: {
+    type: String,
+  },
+  mobile: {
+    type: String,
+  },
+  bloodgroup: {
+    type: String,
+    enum: ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"],
+  },
+  Address: {
+    type: String,
+  },
+  city: {
+    type: String,
+  },
+  state: {
+    type: String,
+  },
+  zipcode: {
+    type: String,
+  },
   nationality: {
     type: String,
   },

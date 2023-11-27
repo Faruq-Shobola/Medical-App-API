@@ -14,6 +14,24 @@ const DoctorSchema = new mongoose.Schema({
     require: [true, "Please provide your email"],
     unique: true,
   },
+  about: {
+    type: String,
+  },
+  mobile: {
+    type: String,
+  },
+  Address: {
+    type: String,
+  },
+  city: {
+    type: String,
+  },
+  state: {
+    type: String,
+  },
+  zipcode: {
+    type: String,
+  },
   nationality: {
     type: String,
   },
