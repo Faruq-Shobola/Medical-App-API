@@ -10,6 +10,7 @@ const register = async (req, res) => {
     const userRecord = await admin.auth().createUser({
       email,
       password,
+      displayName: userType,
     });
 
     // Create user in MongoDB based on userType
@@ -38,28 +39,28 @@ const register = async (req, res) => {
   }
 };
 
-const login = async (req, res) => {
-  try {
-    const { email, password, userType } = req.body;
+// const login = async (req, res) => {
+//   try {
+//     const { email, password, userType } = req.body;
 
-    // Sign in with Firebase
-    await admin.auth().signInWithEmailAndPassword(email, password);
+//     // Sign in with Firebase
+//     await admin.auth().signInWithEmailAndPassword(email, password);
 
-    // Fetch user from MongoDB based on userType
-    let user;
-    if (userType === "doctor") {
-      user = await Doctor.findOne({ email });
-    } else if (userType === "patient") {
-      user = await Patient.findOne({ email });
-    } else {
-      res.status(400).json({ error: "Invalid userType" });
-    }
+//     // Fetch user from MongoDB based on userType
+//     let user;
+//     if (userType === "doctor") {
+//       user = await Doctor.findOne({ email });
+//     } else if (userType === "patient") {
+//       user = await Patient.findOne({ email });
+//     } else {
+//       res.status(400).json({ error: "Invalid userType" });
+//     }
 
-    res.status(200).json({ message: "Login successful", user });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
+//     res.status(200).json({ message: "Login successful", user });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
 
-module.exports = { register, login };
+module.exports = { register };
