@@ -90,7 +90,7 @@ const updateMedication = async (req, res) => {
     // Update the medication
     const updatedMedication = await DailyMedication.findByIdAndUpdate(
       { _id: medicationId },
-      req.body.data,
+      req.body,
       { new: true, runValidators: true }
     );
 
