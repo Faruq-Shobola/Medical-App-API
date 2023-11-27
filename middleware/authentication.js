@@ -1,8 +1,7 @@
 const { admin } = require("../auth");
-const Patient = require("../models/patient");
 
 const auth = (req, res, next) => {
-  const { userType } = req.body;
+  // const { userType } = req.body;
  
   // check header
   const authHeader = req.headers.authorization;
@@ -16,15 +15,8 @@ const auth = (req, res, next) => {
     .verifyIdToken(token)
     .then((payload) => {
 
-      if(userType == "patient") {
-        req.user = { sub: payload.sub, email:payload.email, userType: "patient" };
+        req.user = { sub: payload.sub, email:payload.email, userType: payload.name };
         next()
-      } else if(userType == "doctor") {
-        req.user = { sub: payload.sub, email:payload.email, userType: "doctor" };
-        next();
-      } else {
-        res.status(400).json({ error: "Invalid userType" });
-      }
       
     })
     .catch((error) => {

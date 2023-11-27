@@ -29,16 +29,20 @@ const createMedication = async (req, res) => {
     // Doctors can create medications for patients
     if (user.userType === "doctor") {
       const doctor = await Doctor.findOne({ email: user.email });
-      req.body.data.createdby = doctor._id;
+      req.body.createdby = doctor._id;
       // Assuming patientId is sent in the request body
     } else {
       // Patients can create medications for theirself
       const patient = await Patient.findOne({ email: user.email });
-      req.body.data.createdby = patient._id;
-      req.body.data.assignedto = patient._id;
+      req.body.createdby = patient._id;
+      req.body.assignedto = patient._id;
     }
 
-    const medication = await Medication.create(req.body.data);
+    if (req.body.startdate > req.body.enddate) {
+      res.status(422).json({ error: "Invalid medication duration" });
+    }
+
+    const medication = await Medication.create(req.body);
     res.status(201).json({ medication });
     createDailyMedications(medication);
   } catch (error) {
@@ -74,9 +78,13 @@ const updateMedication = async (req, res) => {
       }
     }
 
+    if (req.body.startdate > req.body.enddate) {
+      res.status(422).json({ error: "Invalid medication duration" });
+    }
+
     const updatedMedication = await Medication.findByIdAndUpdate(
       medicationId,
-      req.body.data,
+      req.body,
       { new: true, runValidators: true }
     );
 
