@@ -11,6 +11,7 @@ const medicationRouter = require("./routes/medication");
 const dailyMedicationRouter = require("./routes/dailymedication");
 const trackMedicationRouter = require("./routes/trackmedication");
 const uploadReportRouter = require("./routes/uploadreport");
+const profileRouter = require("./routes/profile");
 
 const authenticateUser = require("./middleware/authentication");
 // const dailyMedLogger = require("./cron");
@@ -19,10 +20,11 @@ app.use(express.json());
 app.use(cors());
 
 app.use("/api/v1/auth/", authRouter);
+app.use("/api/v1/me/", authenticateUser, profileRouter);
 app.use("/api/v1/medication/", authenticateUser, medicationRouter);
 app.use("/api/v1/dailymedication/", authenticateUser, dailyMedicationRouter);
 app.use("/api/v1/trackmedication/", authenticateUser, trackMedicationRouter);
-app.use("/api/v1/medicalreport/", upload.single('file'), authenticateUser, uploadReportRouter);
+app.use("/api/v1/medicalreport/", authenticateUser, uploadReportRouter);
 
 const port = process.env.port || 3000;
 
