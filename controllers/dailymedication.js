@@ -27,6 +27,7 @@ const createDailyMedications = async (id) => {
         const dailyMedicationEntry = new DailyMedication({
           taken: false,
           date: currentDate,
+          dosage: medication.dosage,
           medications: medication._id,
           patient: medication.assignedto,
         });

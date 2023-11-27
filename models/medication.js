@@ -27,6 +27,10 @@ const MedicationSchema = new mongoose.Schema(
       enum: ["day", "afternoon", "night"],
       required: [true, "please provide a frequency"]
     },
+    dosage: {
+      type: String,
+      required: [true, "please provide the dosage"]
+    },
     createdby: {
       type: mongoose.Types.ObjectId,
       ref: "Doctor",

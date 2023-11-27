@@ -10,6 +10,10 @@ const dailyMedicationSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    dosage: {
+      type: String,
+      required: [true, "please provide the dosage"]
+    },
     medications: {
       type: mongoose.Types.ObjectId,
       ref: "Medication",
