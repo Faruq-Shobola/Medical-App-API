@@ -1,13 +1,9 @@
-const express = require("express")
-const router = express.Router()
+const express = require("express");
+const router = express.Router();
 
-const {
-  Profile,
-  patientProfileUpdate,
-  doctorProfileUpdate,
-} = require("../controllers/profile");
+const { profile, profileUpdate } = require("../controllers/profile");
 
-router.route("/").get(Profile)
-router.route("/update").patch(doctorProfileUpdate).patch(patientProfileUpdate);
+router.route("/").get(profile);
+router.route("/update").patch(profileUpdate)
 
-module.exports = router
+module.exports = router;
