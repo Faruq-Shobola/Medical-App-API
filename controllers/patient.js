@@ -1,11 +1,10 @@
 const Patient = require("../models/patient");
+const Appointment = require("../models/appointment");
 
-
-const getAllPatients = async (req,res) => {
-
-    const patients = await Patient.find({}).sort("createdAt");
+const getAllPatients = async (req, res) => {
+  const patients = await Patient.find({}).sort("createdAt");
   res.status(200).json({ patients, count: patients.length });
-}
+};
 
 const getPatient = async (req, res) => {
   const {
@@ -21,8 +20,12 @@ const getPatient = async (req, res) => {
   res.status(200).json({ patient });
 };
 
+// const getAppointment = async (req, res) => {
+//   console.log("it worked")
+// };
 
 module.exports = {
-    getAllPatients,
-    getPatient,
-}
+  getAllPatients,
+  getPatient,
+  // getAppointment,
+};
